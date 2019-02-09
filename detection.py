@@ -88,13 +88,13 @@ class DetectionModule():
 
                     # Check if the other features between the alert and the fingerprint are matching.
                     if self._similar_alert(alert_fingerprint, fingerprint):
-                        print """
+                        print("""
                             Update Found:
                             
                             From ---> {}
                             
                             To   ---> {}
-                        """.format(fingerprint, alert_fingerprint)
+                        """.format(fingerprint, alert_fingerprint))
                         result = True
                         fingerprint.user_agent = alert_fingerprint.user_agent
                         return result
@@ -400,7 +400,7 @@ class OfflineDetector:
         for f in self.files:
             if "training" in f:
                 self.training_manager.read_from_file(f)
-                print "" + f + " has been loaded for training."
+                print("{} has been loaded for training.".format(f))
 
     def run_detection_2(self):
         """
@@ -418,15 +418,15 @@ class OfflineDetector:
         total_files = 0
         total_detected = 0
 
-        for h, fingerprints in self.training_manager.hosts_fingerprints.iteritems():
+        for h, fingerprints in self.training_manager.hosts_fingerprints.items():
             for f in fingerprints:
                 all_training_fingerprints.append(f)
 
         for f in self.files:
             if "testing" in f:
                 self.testing_manager.read_from_file(f)
-                print "" + f + " has been loaded for testing."
-                for host, test_fingerprints in self.testing_manager.hosts_fingerprints.iteritems():
+                print("{} has been loaded for testing.".format(f))
+                for host, test_fingerprints in self.testing_manager.hosts_fingerprints.items():
                     total_files += 1
                     detected = False
                     for fingerprint in test_fingerprints:
@@ -438,8 +438,8 @@ class OfflineDetector:
                         else:
                             benign.append(fingerprint)
                     if not detected:
-                        print host
+                        print(host)
                 self.testing_manager.hosts_fingerprints = dict()
         # Uncomment if you want to print on how many files at least an alert has been  triggered.
-        # print """{}/{} files detected.""".format(total_detected, total_files)
+        # print("""{}/{} files detected.""".format(total_detected, total_files))
         return alerts, benign

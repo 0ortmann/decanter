@@ -78,9 +78,9 @@ class Aggregator:
             raise ValueError('The mode value is not valid')
         self.mode = mode
         if mode == 1:
-            print "Aggregator switched to Testing mode."
+            print("Aggregator switched to Testing mode.")
         else:
-            print "Aggregator switched to Training mode."
+            print("Aggregator switched to Training mode.")
 
     def analyze_log(self, data):
         """
@@ -120,7 +120,7 @@ class Aggregator:
 
                 # Create and store the fingerprints
                 for host in self.hosts_clusters.keys():
-                    for app, http_cluster in self.hosts_clusters[host].iteritems():
+                    for app, http_cluster in self.hosts_clusters[host].items():
                         self._create_fingerprints(host, http_cluster)
 
                 # Flush the aggregated HTTP requests and reset the starting time
@@ -130,7 +130,7 @@ class Aggregator:
         # Writing of fingerprints in case the file "ended" and the timeout did not exceed.
         if self.hosts_clusters:
             for host in self.hosts_clusters.keys():
-                for app, http_cluster in self.hosts_clusters[host].iteritems():
+                for app, http_cluster in self.hosts_clusters[host].items():
                     self._create_fingerprints(host, http_cluster)
 
         self.hosts_clusters.clear()
@@ -149,7 +149,7 @@ class Aggregator:
 
         # Create and store the fingerprints
         for host in self.hosts_clusters.keys():
-            for app, http_cluster in self.hosts_clusters[host].iteritems():
+            for app, http_cluster in self.hosts_clusters[host].items():
                 self._create_fingerprints(host, http_cluster)
 
         # In OFFLINE mode , dump the generated fingerprints in a .csv file.
@@ -212,7 +212,7 @@ class Aggregator:
 
                 else:
                     all_training_fingerprints = []
-                    for h, fingerprints in self.fin_manager.hosts_fingerprints.iteritems():
+                    for h, fingerprints in self.fin_manager.hosts_fingerprints.items():
                         for f in fingerprints:
                             all_training_fingerprints.append(f)
 

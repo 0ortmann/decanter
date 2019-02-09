@@ -1,7 +1,6 @@
 import ast
 from IPy import IP
 import editdistance
-from urlparse import urlparse
 import csv
 
 
@@ -205,7 +204,7 @@ class FingerprintGenerator():
                         tmp_headers[header_name] += 1
 
         # Set Constant Header Fields
-        for key, val in tmp_headers.iteritems():
+        for key, val in tmp_headers.items():
             if val == number_requests:
                 constant_header_fields.append(key)
 
@@ -335,10 +334,10 @@ class FingerprintManager():
         return self.hosts_fingerprints.get(host, None)
 
     def __str__(self):
-        for host, fingerprints in self.hosts_fingerprints.iteritems():
-            print "Host: " + str(host)
+        for host, fingerprints in self.hosts_fingerprints.items():
+            print("Host: {}".format(host))
             for f in fingerprints:
-                print str(f.__str__())
+                print(f)
 
     # We can use this method to dump the fingerprints after analyzing one log.
 
@@ -346,7 +345,7 @@ class FingerprintManager():
         ofile = open(filename, 'wb')
         writer = csv.writer(ofile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_ALL)
-        for host, fingerp in self.hosts_fingerprints.iteritems():
+        for host, fingerp in self.hosts_fingerprints.items():
             for f in fingerp:
                 input_csv = f.to_csv()
                 input_csv.append(host)

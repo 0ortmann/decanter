@@ -1,7 +1,7 @@
 from brothon import bro_log_reader
 import pandas as pd
 import networkx as nx
-from urlparse import urlparse
+import urllib
 import editdistance
 
 
@@ -216,7 +216,7 @@ class ReferrerGraph:
                 return True
 
         if '*/*' in request.header_values.get('accept', ''):
-            stripped_uri = urlparse(request.uri).path.rsplit('.', 1)
+            stripped_uri = urllib.parse.urlparse(request.uri).path.rsplit('.', 1)
             # If there is an extension
             if len(stripped_uri) == 2:
                 for t in types:
@@ -258,8 +258,8 @@ class ReferrerGraph:
 
         # Check if referer is set (ReSurf method)
         elif referrer != '' and host != '':
-            referrer = urlparse(referrer).netloc.split('.')[-self.subdomains:]
-            host = urlparse(host).path.split('.')[-self.subdomains:]
+            referrer = urllib.parse.urlparse(referrer).netloc.split('.')[-self.subdomains:]
+            host = urllib.parse.urlparse(host).path.split('.')[-self.subdomains:]
 
             return referrer == host and abs((request.ts - headNode.ts).total_seconds()) < self.time_threshold
 
@@ -269,11 +269,11 @@ class ReferrerGraph:
             # Favicons should not contain any query containing exfiltrated data
             # Favicons path will request a favicon.ico item
             # Favicons should not have a request body
-            isFavicon = request.method == 'GET' and not urlparse(request.uri).query and urlparse(
-                request.uri).path.endswith('ico') and 'favicon' in urlparse(request.uri).path and request.req_body_len == 0
-            requestHost = urlparse(request.header_values.get(
+            isFavicon = request.method == 'GET' and not urllib.parse.urlparse(request.uri).query and urllib.parse.urlparse(
+                request.uri).path.endswith('ico') and 'favicon' in urllib.parse.urlparse(request.uri).path and request.req_body_len == 0
+            requestHost = urllib.parse.urlparse(request.header_values.get(
                 'host', '')).path.split('.')[-self.subdomains:]
-            headHost = urlparse(headNode.header_values.get(
+            headHost = urllib.parse.urlparse(headNode.header_values.get(
                 'host', '')).path.split('.')[-self.subdomains:]
 
             return requestHost == headHost and isFavicon
@@ -542,7 +542,7 @@ class LabelGenerator():
         exfiltration_attempts = []
 
         for request in referrerGraph.iter_disconnected_nodes():
-            if request.method == 'POST' and request.req_body_len > 0 or request.method == 'GET' and urlparse(request.uri).query:
+            if request.method == 'POST' and request.req_body_len > 0 or request.method == 'GET' and urllib.parse.urlparse(request.uri).query:
                 exfiltration_attempts.append(request)
 
         return exfiltration_attempts
@@ -573,7 +573,7 @@ class LabelGenerator():
         # Create a similarity filter for all nodes
         connections = dict()
         for request in referrerGraph.iter_disconnected_nodes():
-            key = (request.method, urlparse(request.uri).path)
+            key = (request.method, urllib.parse.urlparse(request.uri).path)
             connections.setdefault(key, []).append(request)
 
         # Iterate over all connections
@@ -623,13 +623,13 @@ class LabelGenerator():
                 result.append(request)
 
         for request in result:
-            key = (request.method, urlparse(request.uri).path)
+            key = (request.method, urllib.parse.urlparse(request.uri).path)
             connections.setdefault(key, []).append(request)
 
         result = []
 
         for key, value in connections.items():
-            parameters = [urlparse(v.uri).query for v in value]
+            parameters = [urllib.parse.urlparse(v.uri).query for v in value]
 
             outgoing_information = len(parameters[0])
 

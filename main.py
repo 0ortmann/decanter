@@ -20,11 +20,9 @@ def dumped_fingerprint_analysis(path):
     e.detection_performance_2()
 
     # Print the unique Fingerprints (i.e., with retraining).
-    print """
-    Unique Fingerprints: {}
-    """.format(len(e.unique_fing))
+    print("Unique Fingerprints: {}\n".format(len(e.unique_fing)))
     for f in e.unique_fing:
-        print f
+        print(f)
 
 
 def log_fingerprint_analysis(training_log, testing_log, offline):
@@ -51,11 +49,9 @@ def log_fingerprint_analysis(training_log, testing_log, offline):
     e = EvaluationUtils(decanter_trainer.alerts, [])
     e._unique_fingerprints()
 
-    print """
-    Unique Alerts: {}
-    """.format(len(e.unique_fing))
+    print("Unique Alerts: {}\n".format(len(e.unique_fing)))
     for f in e.unique_fing:
-        print f
+        print(f)
 
 
 def main(argv):

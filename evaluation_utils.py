@@ -61,7 +61,7 @@ class EvaluationUtils:
         fp_fings = len(fp)
         fn_fings = len(fn)
 
-        print """
+        print("""
             ********************************************
                  Detection Performance - fingerprints
             ********************************************
@@ -69,7 +69,7 @@ class EvaluationUtils:
             -----------------------             -----------------------
             True positives:  {:<10}         True negatives:  {:<10}
             False negatives: {:<10}         False positives: {:<10}
-        """.format(tp_fings, tn_fings, fn_fings, fp_fings)
+        """.format(tp_fings, tn_fings, fn_fings, fp_fings))
 
         retrained_fp = []
 
@@ -83,7 +83,7 @@ class EvaluationUtils:
         retrained_tn_fings = tn_fings + (fp_fings - retrained_fp_fings)
         retrained_fn_fings = fn_fings
 
-        print """
+        print("""
             ***************************************************************
                  Detection Performance - fingerprints - after retraining
             ***************************************************************
@@ -91,7 +91,7 @@ class EvaluationUtils:
             -----------------------             -----------------------
             True positives:  {:<10}         True negatives:  {:<10}
             False negatives: {:<10}         False positives: {:<10}
-        """.format(retrained_tp_fings, retrained_tn_fings, retrained_fn_fings, retrained_fp_fings)
+        """.format(retrained_tp_fings, retrained_tn_fings, retrained_fn_fings, retrained_fp_fings))
 
         tp_reqs = sum([sum([hosts[1] for hosts in fingerprint.hosts])
                        for fingerprint in tp])
@@ -102,7 +102,7 @@ class EvaluationUtils:
         fn_reqs = sum([sum([hosts[1] for hosts in fingerprint.hosts])
                        for fingerprint in fn])
 
-        print """
+        print("""
             ****************************************
                  Detection Performance - requests
             ****************************************
@@ -110,7 +110,7 @@ class EvaluationUtils:
             -----------------------             -----------------------
             True positives:  {:<10}         True negatives:  {:<10}
             False negatives: {:<10}         False positives: {:<10}
-        """.format(tp_reqs, tn_reqs, fn_reqs, fp_reqs)
+        """.format(tp_reqs, tn_reqs, fn_reqs, fp_reqs))
 
         retrained_fp = []
 
@@ -125,7 +125,7 @@ class EvaluationUtils:
         retrained_tn_reqs = tn_reqs + (fp_reqs - retrained_fp_reqs)
         retrained_fn_reqs = fn_reqs
 
-        print """
+        print("""
             **********************************************************
                 Detection Performance - requests - after retraining
             **********************************************************
@@ -133,7 +133,7 @@ class EvaluationUtils:
             -----------------------             -----------------------
             True positives:  {:<10}         True negatives:  {:<10}
             False negatives: {:<10}         False positives: {:<10}
-        """.format(retrained_tp_reqs, retrained_tn_reqs, retrained_fn_reqs, retrained_fp_reqs)
+        """.format(retrained_tp_reqs, retrained_tn_reqs, retrained_fn_reqs, retrained_fp_reqs))
 
         return tp_reqs, tn_reqs, fn_reqs, fp_reqs
 
@@ -154,7 +154,7 @@ class EvaluationUtils:
             for domain, number_req in f.hosts:
                 req_uniq_alerts += number_req
 
-        print """
+        print("""
             *************************************
                       Fingerprints Stats
             *************************************
@@ -168,7 +168,7 @@ class EvaluationUtils:
             Benign Requests:              {}
             Alerts Requests:              {}
             ----> Unique Alerts Requests: {}
-        """.format(len(self.benign), len(self.alerts), len(self.unique_fing), req_benign, req_alerts, req_uniq_alerts)
+        """.format(len(self.benign), len(self.alerts), len(self.unique_fing), req_benign, req_alerts, req_uniq_alerts))
 
     def _unique_fingerprints(self):
         '''
