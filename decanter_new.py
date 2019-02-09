@@ -20,7 +20,8 @@ class HTTPRequest():
 
         """
         self.uid = http_req.get('uid', None)
-        self.ts = http_req.get('ts', None)
+        ts = http_req.get('ts', None)
+        self.ts = datetime.date.fromtimestamp(ts) if type(ts) == float else ts
         self.orig_ip = http_req.get('id.orig_h', None)
         self.orig_port = http_req.get('id.orig_p', None)
         self.dest_ip = http_req.get('id.resp_h', None)

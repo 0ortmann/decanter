@@ -25,10 +25,10 @@ def dumped_fingerprint_analysis(path):
         print(f)
 
 
-def log_fingerprint_analysis(training_log, testing_log, offline):
+def log_fingerprint_analysis(training_log, testing_log, offline, is_json):
     bp = BroParser()
-    training = bp.parseFile(training_log)
-    testing = bp.parseFile(testing_log)
+    training = bp.parseFile(training_log, is_json)
+    testing = bp.parseFile(testing_log, is_json)
 
     # Initialize the aggregator.
     # Use Training mode first (i.e., 0)
@@ -64,13 +64,15 @@ def main(argv):
                         help='Bro log file used for testing against trained fingerprints.')
     parser.add_argument('-o', '--offline', type=int, default=1,
                         help='Choose 1 if you want to dump the fingerprints extracted from the logs to .csv files. Choose 0 if you want to run the evaluation from the logs. (default=1).')
+    parser.add_argument('-j', '--json', type=bool, default=False,
+                        help='Define the bro log format. Default is False for normal bro logs.')
 
     args = parser.parse_args()
     if args.csv != None:
         dumped_fingerprint_analysis(args.csv)
 
     if args.training != None and args.testing != None and (args.offline != None):
-        log_fingerprint_analysis(args.training, args.testing, args.offline)
+        log_fingerprint_analysis(args.training, args.testing, args.offline, args.json)
 
 
 if __name__ == "__main__":

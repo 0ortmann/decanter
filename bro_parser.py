@@ -9,7 +9,7 @@ class BroParser:
     def __init__(self):
         pass
 
-    def parseFile(self, filename):
+    def parseFile(self, filename, json=False):
         """ Creates a pandas dataframe from given brofile
 
             Parameters
@@ -22,11 +22,16 @@ class BroParser:
             result : pd.DataFrame
                 Pandas dataframe containing bro log file
             """
-        bro_log = bro_log_reader.BroLogReader(filename)
-        data = pd.DataFrame(bro_log.readrows())
-        data['header_values'] = data['header_values'].apply(
+        df = None
+        if not json:
+            bro_log = bro_log_reader.BroLogReader(filename)
+            df = pd.DataFrame(bro_log.readrows())
+        else:
+            df = pd.read_json(filename, lines = True)
+            df.rename(index=str, columns={'client_header_names': 'header_values'}, inplace=True)
+        df['header_values'] = df['header_values'].apply(
             self.__parseHeaderValues__)
-        return data
+        return df
 
     def __parseHeaderValues__(self, headerValues):
         """ Parse header values from BRO encoding to dictionary.
