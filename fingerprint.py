@@ -71,9 +71,9 @@ class Fingerprint():
 
     def to_csv(self):
         if self.label == "Background":
-            return [self.label, self.method, self.user_agent, self.hosts, self.ip_dsts, self.constant_header_fields, self.avg_size, self.outgoing_info, self.is_malicious]
+            return [self.label, self.method, self.user_agent, list(self.hosts), self.ip_dsts, self.constant_header_fields, self.avg_size, self.outgoing_info, self.is_malicious]
         else:
-            return [self.label, self.method, self.user_agent, self.hosts, self.ip_dsts, self.language, self.outgoing_info, self.is_malicious]
+            return [self.label, self.method, self.user_agent, list(self.hosts), self.ip_dsts, self.language, self.outgoing_info, self.is_malicious]
 
 
 class FingerprintGenerator():
@@ -342,7 +342,7 @@ class FingerprintManager():
     # We can use this method to dump the fingerprints after analyzing one log.
 
     def write_to_file(self, filename):
-        ofile = open(filename, 'wb')
+        ofile = open(filename, 'w')
         writer = csv.writer(ofile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_ALL)
         for host, fingerp in self.hosts_fingerprints.items():
@@ -394,7 +394,7 @@ class FingerprintManager():
     # We can use this method to read the "trained" fingerprints.
 
     def read_from_file(self, filename):
-        with open(filename, 'rb') as f:
+        with open(filename, 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 #self.store(row[-1], self.from_cvs(row))

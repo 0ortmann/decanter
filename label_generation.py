@@ -581,8 +581,8 @@ class LabelGenerator():
 
             total = 0
             # Gather a list of header value tuples (field, value) for all request in the same connection.
-            val = map(lambda l: [tup for tup in sorted(
-                l.header_values.items()) if tup[0] != 'content-length'], value)
+            val = list(map(lambda l: [tup for tup in sorted(
+                l.header_values.items()) if tup[0] != 'content-length'], value))
 
             # Check whether there is more than 1 request per connection
             if len(val) > 1:
