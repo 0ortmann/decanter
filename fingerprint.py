@@ -56,7 +56,7 @@ class Fingerprint():
                     Average Req Size: {}
                     Outgoing Info: {}
                     Is malicious: {}
-            """.format(self.label, self.method, self.user_agent, self.hosts, self.ip_dsts, self.constant_header_fields, self.avg_size, self.outgoing_info, self.is_malicious == '1')
+            """.format(self.label, self.method, self.user_agent, list(self.hosts), self.ip_dsts, self.constant_header_fields, self.avg_size, self.outgoing_info, self.is_malicious == '1')
         else:
             return """
             {} Application:
@@ -67,7 +67,7 @@ class Fingerprint():
                     Language: {}
                     Outgoing Info: {}
                     Is malicious: {}
-            """.format(self.label, self.method, self.user_agent, len(ast.literal_eval(str(self.hosts))), len(ast.literal_eval(str(self.ip_dsts))), self.language, self.outgoing_info, self.is_malicious == '1')
+            """.format(self.label, self.method, self.user_agent, len(ast.literal_eval(str(list(self.hosts)))), len(ast.literal_eval(str(self.ip_dsts))), self.language, self.outgoing_info, self.is_malicious == '1')
 
     def to_csv(self):
         if self.label == "Background":
