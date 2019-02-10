@@ -37,6 +37,30 @@ class BroParser:
             self.__parseHeaderValues__)
         return df
 
+    def parseLine(self, line):
+        """ Creates a pandas dataframe from given json logline
+
+            Parameters
+            ----------
+            line : dict
+                zeek json log line
+
+            Returns
+            -------
+            result : pd.DataFrame
+                Pandas dataframe containing zeek log line
+            """
+        df = pd.DataFrame.from_dict(line, orient='index')
+        df = df.transpose()
+        df.rename(
+            index=str,
+            columns={
+                'client_header_names': 'header_values'},
+            inplace=True)
+        df['header_values'] = df['header_values'].apply(
+            self.__parseHeaderValues__)
+        return df
+
     def __parseHeaderValues__(self, headerValues):
         """ Parse header values from BRO encoding to dictionary.
 

@@ -16,6 +16,8 @@ class Decanter():
         self.is_json = is_json
         self.csv_path = csv_path
 
+        self.model = None
+
     def dumped_fingerprint_analysis(self):
         if self.csv_path is None:
             print('Cannot run without csv data')
@@ -76,8 +78,18 @@ class Decanter():
         # switch mode to testing
         decanter_trainer.change_mode(1)
 
-        return decanter_trainer
+        self.model = decanter_trainer
 
+    def test(self, logline):
+        bp = BroParser()
+        testing = bp.parseLine(logline)
+
+        self.model.analyze_log(testing)
+
+        e = EvaluationUtils(self.model.alerts, [])
+        e._unique_fingerprints()
+
+        return e.unique_fing
 
 def main(argv):
     parser = argparse.ArgumentParser(
