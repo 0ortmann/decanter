@@ -36,7 +36,7 @@ class DetectionModule():
                 --> return False if it is similar to an existing fingerprint or it is a software update.
         """
 
-        if new_fingerprint == None:
+        if new_fingerprint is None:
             return False
 
         # Check if new_fingerprint is similar to any existing fingerprint.
@@ -44,14 +44,16 @@ class DetectionModule():
             if self.similarity_check(new_fingerprint, trained_f):
                 return False
 
-        # Check if the new_fingerprint exfiltrates enough data to be considered as an alert.
+        # Check if the new_fingerprint exfiltrates enough data to be considered
+        # as an alert.
         if new_fingerprint.outgoing_info > self.outgoing_threshold:
             if self._is_update(new_fingerprint, trained_fingerprints):  # TODO
                 return False  # TODO
             else:
                 return True  # It is not an update --> trigger alert.
 
-        # If new_fingerprint tries to be a browser (and it is likely not a browser), then an alert is triggered.
+        # If new_fingerprint tries to be a browser (and it is likely not a
+        # browser), then an alert is triggered.
         if self._fake_browser(new_fingerprint.user_agent):  # TODO
             return True
         else:
@@ -86,13 +88,14 @@ class DetectionModule():
 
                 if ua_similarity_distance <= self.update_threhshold:
 
-                    # Check if the other features between the alert and the fingerprint are matching.
+                    # Check if the other features between the alert and the
+                    # fingerprint are matching.
                     if self._similar_alert(alert_fingerprint, fingerprint):
                         print("""
                             Update Found:
-                            
+
                             From ---> {}
-                            
+
                             To   ---> {}
                         """.format(fingerprint, alert_fingerprint))
                         result = True
@@ -102,7 +105,7 @@ class DetectionModule():
 
     def _ua_distance(self, new_ua, old_ua):
         """
-        This method  computes the similarity between two user-agent strings. 
+        This method  computes the similarity between two user-agent strings.
         The lower the values, the more similar the strings are.
 
             Parameters
@@ -203,7 +206,8 @@ class DetectionModule():
         """
         score = 0.0
 
-        # Fingerprints are not similar if they represents two different type of application
+        # Fingerprints are not similar if they represents two different type of
+        # application
         if new_f1.label != old_f2.label:
             return False
 
@@ -287,7 +291,7 @@ class DetectionModule():
 
     def _avg_size_check(self, new_avg, old_avg):
         """
-        This method checks if the average request size of the new fingerprint falls within a certain range 
+        This method checks if the average request size of the new fingerprint falls within a certain range
         from the average size of the old fingerprint.
 
             Parameters
@@ -304,7 +308,8 @@ class DetectionModule():
         result = 0.0
         error_margin = (float(old_avg) / 100) * avg_percentage_error
 
-        if (float(old_avg) + error_margin) >= float(new_avg) >= (float(old_avg) - error_margin):
+        if (float(old_avg) +
+                error_margin) >= float(new_avg) >= (float(old_avg) - error_margin):
             result = 1.0
             return result
         elif (float(old_avg) + 2 * error_margin) >= float(new_avg) >= (float(old_avg) - 2 * error_margin):
@@ -333,7 +338,8 @@ class DetectionModule():
         for header in new_const_headers:
             if header in old_const_headers:
                 matches += 1
-        if matches == len(old_const_headers) and len(new_const_headers) == len(old_const_headers):
+        if matches == len(old_const_headers) and len(
+                new_const_headers) == len(old_const_headers):
             result += 1.0
             return result
         elif matches == len(old_const_headers) and len(new_const_headers) > len(old_const_headers):
@@ -430,7 +436,8 @@ class OfflineDetector:
                     total_files += 1
                     detected = False
                     for fingerprint in test_fingerprints:
-                        if self.detector.detection(all_training_fingerprints, fingerprint):
+                        if self.detector.detection(
+                                all_training_fingerprints, fingerprint):
                             if not detected:
                                 total_detected += 1
                                 detected = True

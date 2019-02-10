@@ -26,7 +26,7 @@ class EvaluationUtils:
            raising an alert, the alert will NOT be appear in the future communications, because is known to be "trusted".
 
         This method outputs the classificatoin results for number of fingerprints and requests. DECANTeR works based on fingerprints, which is
-        the real representation of its performance. However, in order to compare it with DUMONT, we have added an analysis also per requests, which 
+        the real representation of its performance. However, in order to compare it with DUMONT, we have added an analysis also per requests, which
         works as follows:
         - The number of fp/tp/fn/tn is the amount of requests contained in the fingerprint classified as fp/tp/fn/tn.
 
@@ -161,7 +161,7 @@ class EvaluationUtils:
             Benign Fingerprints: {}
             Alerts Fingerprints: {}
             ----> Unique Alerts: {}
-            
+
             *************************************
                         Requests Stats
             *************************************
@@ -180,7 +180,7 @@ class EvaluationUtils:
             Param
             ---------
             return:
-                Set of unique Fingerprints. 
+                Set of unique Fingerprints.
         '''
         detector = DetectionModule()
         unique_alerts = []

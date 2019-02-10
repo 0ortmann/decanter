@@ -21,7 +21,8 @@ class HTTPRequest():
         """
         self.uid = http_req.get('uid', None)
         ts = http_req.get('ts', None)
-        self.ts = datetime.date.fromtimestamp(ts) if type(ts) == float else ts
+        self.ts = datetime.date.fromtimestamp(
+            ts) if isinstance(ts, float) else ts
         self.orig_ip = http_req.get('id.orig_h', None)
         self.orig_port = http_req.get('id.orig_p', None)
         self.dest_ip = http_req.get('id.resp_h', None)
@@ -37,7 +38,8 @@ class HTTPRequest():
         self.is_malicious = http_req.get('is_malicious', None)
 
     def __str__(self):
-        return "Request:\n{} {}\nHeaders:\n{}\n".format(self.method, self.uri, self.header_values.items())
+        return "Request:\n{} {}\nHeaders:\n{}\n".format(
+            self.method, self.uri, self.header_values.items())
 
 
 class Aggregator:
@@ -48,7 +50,8 @@ class Aggregator:
     # Timeout used only in testing mode.
     timeout = datetime.timedelta(minutes=10)
 
-    def __init__(self, mode=0, offline=0, dump_testing='testing_fingerprints.csv', dump_training='training_fingerprints.csv'):
+    def __init__(self, mode=0, offline=0, dump_testing='testing_fingerprints.csv',
+                 dump_training='training_fingerprints.csv'):
         # 0 for Training mode - 1 for Testing mode
         if (mode != 0 and mode != 1) or (offline != 0 and offline != 1):
             raise ValueError(
@@ -107,7 +110,7 @@ class Aggregator:
             h = HTTPRequest(http_data)
 
             # Initialize Time
-            if self.time_start == None:
+            if self.time_start is None:
                 self.time_start = h.ts
 
             # Aggregate request
@@ -124,11 +127,13 @@ class Aggregator:
                     for app, http_cluster in self.hosts_clusters[host].items():
                         self._create_fingerprints(host, http_cluster)
 
-                # Flush the aggregated HTTP requests and reset the starting time
+                # Flush the aggregated HTTP requests and reset the starting
+                # time
                 self.hosts_clusters.clear()
                 self.time_start = None
 
-        # Writing of fingerprints in case the file "ended" and the timeout did not exceed.
+        # Writing of fingerprints in case the file "ended" and the timeout did
+        # not exceed.
         if self.hosts_clusters:
             for host in self.hosts_clusters.keys():
                 for app, http_cluster in self.hosts_clusters[host].items():
@@ -206,7 +211,8 @@ class Aggregator:
                 new_fingerprint = self.fin_generator.generate_fingerprint(
                     cluster, method, label)
 
-                # In OFFLINE mode, dump the generated fingerprints in a .csv file. IN THIS CASE WE APPEND!!!!
+                # In OFFLINE mode, dump the generated fingerprints in a .csv
+                # file. IN THIS CASE WE APPEND!!!!
                 if self.offline == 1:
                     self.fin_manager.write_fingerprint_to_file(
                         self.dump_testing, new_fingerprint, host)
@@ -217,7 +223,8 @@ class Aggregator:
                         for f in fingerprints:
                             all_training_fingerprints.append(f)
 
-                    if self.detector.detection(all_training_fingerprints, new_fingerprint):
+                    if self.detector.detection(
+                            all_training_fingerprints, new_fingerprint):
                         self.alerts.append(new_fingerprint)
 
         else:
@@ -225,7 +232,7 @@ class Aggregator:
 
     def _insert_http_request(self, req):
         """
-            Aggregate the HTTP requests per host and user-agent 
+            Aggregate the HTTP requests per host and user-agent
 
             Parameter
             -------------------
@@ -239,14 +246,16 @@ class Aggregator:
         # Add a request to the cluster of a known host
         if req.orig_ip in self.hosts_clusters:
 
-            # Create and/or Update a cluster for those requests that DO NOT HAVE a User-Agent
+            # Create and/or Update a cluster for those requests that DO NOT
+            # HAVE a User-Agent
             if 'user-agent' not in req.header_values:
                 if 'None' not in self.hosts_clusters[req.orig_ip]:
                     self.hosts_clusters[req.orig_ip]['None'] = [req]
                 else:
                     self.hosts_clusters[req.orig_ip]['None'].append(req)
 
-            # Create and/or Update a cluster for those requests that DO HAVE a User-Agent
+            # Create and/or Update a cluster for those requests that DO HAVE a
+            # User-Agent
             else:
                 if req.header_values['user-agent'] not in self.hosts_clusters[req.orig_ip]:
                     self.hosts_clusters[req.orig_ip][req.header_values['user-agent']] = [req]

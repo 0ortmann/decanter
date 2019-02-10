@@ -24,7 +24,7 @@ class ReferrerGraph:
 
             time_threshold : int, default = None
                 maximum amount of time between requests to use in checking referrer link
-                is set to global self.time_threshold when it is not set        
+                is set to global self.time_threshold when it is not set
 
             """
 
@@ -39,7 +39,7 @@ class ReferrerGraph:
         self.graph = self._createGraph_(self.cluster)
 
     def write(self, outfile):
-        """ Method to write bro graph. 
+        """ Method to write bro graph.
 
             Parameters
             ----------
@@ -60,7 +60,7 @@ class ReferrerGraph:
         nx.write_gml(g, outfile)
 
     def iter_nodes(self):
-        """ Method to iterate over all nodes in graph 
+        """ Method to iterate over all nodes in graph
 
             Returns
             -------
@@ -193,7 +193,8 @@ class ReferrerGraph:
 
         return graph
 
-    def _isHeadNode_(self, request, types=['html', 'css', 'javascript', 'flash']):
+    def _isHeadNode_(self, request, types=[
+                     'html', 'css', 'javascript', 'flash']):
         """ Method indicating whether a pair is a head node.
 
             Parameters
@@ -216,7 +217,8 @@ class ReferrerGraph:
                 return True
 
         if '*/*' in request.header_values.get('accept', ''):
-            stripped_uri = urllib.parse.urlparse(request.uri).path.rsplit('.', 1)
+            stripped_uri = urllib.parse.urlparse(
+                request.uri).path.rsplit('.', 1)
             # If there is an extension
             if len(stripped_uri) == 2:
                 for t in types:
@@ -258,13 +260,16 @@ class ReferrerGraph:
 
         # Check if referer is set (ReSurf method)
         elif referrer != '' and host != '':
-            referrer = urllib.parse.urlparse(referrer).netloc.split('.')[-self.subdomains:]
-            host = urllib.parse.urlparse(host).path.split('.')[-self.subdomains:]
+            referrer = urllib.parse.urlparse(
+                referrer).netloc.split('.')[-self.subdomains:]
+            host = urllib.parse.urlparse(
+                host).path.split('.')[-self.subdomains:]
 
-            return referrer == host and abs((request.ts - headNode.ts).total_seconds()) < self.time_threshold
+            return referrer == host and abs(
+                (request.ts - headNode.ts).total_seconds()) < self.time_threshold
 
         # Check for acceptable favicon.ico request
-        elif request.header_values.get('host', None) != None and headNode.header_values.get('host', None) != None:
+        elif request.header_values.get('host', None) is not None and headNode.header_values.get('host', None) is not None:
             # Favicons should be GET requests
             # Favicons should not contain any query containing exfiltrated data
             # Favicons path will request a favicon.ico item
@@ -298,7 +303,8 @@ class ReferrerGraph:
         if headerValues == '-':
             return dict()
         else:
-            return dict((x, y) for x, y in list(map(lambda entry: (entry.split('||')[0].lower(), entry.split('||')[1].replace('\\x2c', ',')), headerValues.split(','))))
+            return dict((x, y) for x, y in list(map(lambda entry: (entry.split('||')[
+                        0].lower(), entry.split('||')[1].replace('\\x2c', ',')), headerValues.split(','))))
 
     def __str__(self):
         connected_nodes = 0
@@ -310,7 +316,8 @@ class ReferrerGraph:
         for node in self.iter_disconnected_nodes():
             disconnected_nodes += 1
 
-        return "ReferrerGraph:\n        Total nodes:       {}\n        Connected nodes:   {}\n        Disconneted nodes: {}".format((connected_nodes + disconnected_nodes), connected_nodes, disconnected_nodes)
+        return "ReferrerGraph:\n        Total nodes:       {}\n        Connected nodes:   {}\n        Disconneted nodes: {}".format(
+            (connected_nodes + disconnected_nodes), connected_nodes, disconnected_nodes)
 
 
 class LabelGenerator():
@@ -321,7 +328,8 @@ class LabelGenerator():
     def __init__(self):
         pass
 
-    def generate_label(self, cluster, mode=1, browser_user_agents=set(), referrerGraphs=dict()):
+    def generate_label(self, cluster, mode=1,
+                       browser_user_agents=set(), referrerGraphs=dict()):
         """ Label a cluster as GET or POST and Browser or Background.
 
             Labelling is done on two levels: Browser vs Background and GET vs POST.
@@ -360,7 +368,8 @@ class LabelGenerator():
         referrerGraph, label = self._generate_type_label(
             cluster, mode, browser_user_agents)
 
-        # Perform browser checks and split data into browser data and background data
+        # Perform browser checks and split data into browser data and
+        # background data
         if label == 'Browser':
             # If training phase
             if mode == 0:
@@ -371,7 +380,8 @@ class LabelGenerator():
                 browser_cluster, background_cluster = self._check_browser_malware(
                     referrerGraph)
 
-        # Suspecter Browser are clusters labelled as Background applications, and have a known "browser" user-agent
+        # Suspecter Browser are clusters labelled as Background applications,
+        # and have a known "browser" user-agent
         elif label == 'Suspected Browser':
 
             g = referrerGraphs.get(
@@ -379,7 +389,8 @@ class LabelGenerator():
 
             if g is not None:
                 connected, disconnected = g.appendable(cluster)
-                if len(disconnected) != 0 and len(connected)/len(disconnected) > 0.5:
+                if len(disconnected) != 0 and len(
+                        connected) / len(disconnected) > 0.5:
                     label = 'Browser'
                     browser_cluster, background_cluster = self._check_browser_malware(
                         ReferrerGraph(cluster))
@@ -400,23 +411,24 @@ class LabelGenerator():
             raise ValueError('Encountered unknown label: ', str(label))
 
         # Split each cluster according to its method
-        browser_get,    browser_post = self._method_split(browser_cluster)
+        browser_get, browser_post = self._method_split(browser_cluster)
         background_get, background_post = self._method_split(
             background_cluster)
 
         result = dict()
         if len(browser_get):
-            result[('GET',  'Browser')] = browser_get
+            result[('GET', 'Browser')] = browser_get
         if len(browser_post):
             result[('POST', 'Browser')] = browser_post
         if len(background_get):
-            result[('GET',  'Background')] = background_get
+            result[('GET', 'Background')] = background_get
         if len(background_post):
             result[('POST', 'Background')] = background_post
 
         return result, referrerGraph
 
-    def _generate_type_label(self, cluster, mode, browser_user_agents, threshold=0.5):
+    def _generate_type_label(
+            self, cluster, mode, browser_user_agents, threshold=0.5):
         """ Labels cluster as Browser or Background according to its referrer graph.
 
             All nodes in the cluster are linked based on their referrer value.
@@ -457,9 +469,10 @@ class LabelGenerator():
             disconnected_count += 1
 
         label = "Background" if float(
-            connected_count) / (connected_count+disconnected_count) < threshold else "Browser"
+            connected_count) / (connected_count + disconnected_count) < threshold else "Browser"
 
-        if label == "Background" and cluster[0].header_values.get('user-agent', None) in browser_user_agents:
+        if label == "Background" and cluster[0].header_values.get(
+                'user-agent', None) in browser_user_agents:
             label = "Suspected Browser"
 
         return referrerGraph, label
@@ -484,7 +497,7 @@ class LabelGenerator():
                 List of HTTPRequest which are correct browser traffic.
 
             exfiltration_requests : list of HTTPRequest
-                List of HTTPRequest which are non-browser data exfiltration attempts.                
+                List of HTTPRequest which are non-browser data exfiltration attempts.
 
             """
 
@@ -524,7 +537,7 @@ class LabelGenerator():
     def _exfiltration_filter(self, referrerGraph):
         """ Check whether naive exfiltration is occuring.
 
-            Naive exfiltration occurs with a POST request with data upload 
+            Naive exfiltration occurs with a POST request with data upload
             or a GET request where parameters are set.
 
             Parameters
@@ -542,14 +555,15 @@ class LabelGenerator():
         exfiltration_attempts = []
 
         for request in referrerGraph.iter_disconnected_nodes():
-            if request.method == 'POST' and request.req_body_len > 0 or request.method == 'GET' and urllib.parse.urlparse(request.uri).query:
+            if request.method == 'POST' and request.req_body_len > 0 or request.method == 'GET' and urllib.parse.urlparse(
+                    request.uri).query:
                 exfiltration_attempts.append(request)
 
         return exfiltration_attempts
 
     def _similarity_filter(self, referrerGraph, threshold=0.1):
         """ Check whether requests using the same method to the same URI
-            are similar in header values. 
+            are similar in header values.
 
             Parameters
             ----------
@@ -567,7 +581,8 @@ class LabelGenerator():
 
             """
 
-        # Result storing all requests for which the similarity filter raises an alert
+        # Result storing all requests for which the similarity filter raises an
+        # alert
         result = []
 
         # Create a similarity filter for all nodes
@@ -580,24 +595,27 @@ class LabelGenerator():
         for key, value in connections.items():
 
             total = 0
-            # Gather a list of header value tuples (field, value) for all request in the same connection.
+            # Gather a list of header value tuples (field, value) for all
+            # request in the same connection.
             val = list(map(lambda l: [tup for tup in sorted(
                 l.header_values.items()) if tup[0] != 'content-length'], value))
 
             # Check whether there is more than 1 request per connection
             if len(val) > 1:
                 # Compute changes in header values
-                for idx in range(len(val)-1):
-                    total += editdistance.eval(val[idx], val[idx+1])
+                for idx in range(len(val) - 1):
+                    total += editdistance.eval(val[idx], val[idx + 1])
 
-                # If average change in header values is too small, raise an alert
-                if float(total)/(len(val)-1) <= threshold:
+                # If average change in header values is too small, raise an
+                # alert
+                if float(total) / (len(val) - 1) <= threshold:
                     for request in value:
                         result.append(request)
 
         return result
 
-    def _exfiltration_similarity_threshold(self, exfiltration, similarity, threshold=500):
+    def _exfiltration_similarity_threshold(
+            self, exfiltration, similarity, threshold=500):
         """ Check whether the automated data exfiltration attempts exceed a threshold.
 
             To filter false positives we check whether repeating exfiltration
@@ -633,9 +651,9 @@ class LabelGenerator():
 
             outgoing_information = len(parameters[0])
 
-            for idx in range(len(parameters)-1):
+            for idx in range(len(parameters) - 1):
                 outgoing_information += editdistance.eval(
-                    parameters[idx], parameters[idx+1])
+                    parameters[idx], parameters[idx + 1])
 
             if outgoing_information == 0 or outgoing_information > threshold:
                 for v in value:
@@ -661,13 +679,13 @@ class LabelGenerator():
 
             threshold : int, default=500
                 Threshold of bytes which may be 'exfiltrated' before raising an alert.
-                Note that headers such as cookie will differ between requests, this 
+                Note that headers such as cookie will differ between requests, this
                 threshold aims to reduce false positives caused by such fields.
 
             Returns
             -------
             result : list of HTTPRequest
-                All HTTPRequest of connections for which the similarity filter detected header exfiltration.                
+                All HTTPRequest of connections for which the similarity filter detected header exfiltration.
 
             """
 
@@ -678,7 +696,8 @@ class LabelGenerator():
 
             # First extract headers from all requests
             # Then sort these (field, value) tuples based on field
-            # Finally transform list of (field, value) to [list of fields, list of values]
+            # Finally transform list of (field, value) to [list of fields, list
+            # of values]
             headers = map(lambda req: req.header_values.items(),
                           sorted(value, key=lambda v: v.ts))
             s_headers = map(lambda req: sorted(
@@ -691,18 +710,19 @@ class LabelGenerator():
                 total_ld_value = 0
                 total_ld_indiv = 0
 
-                for idx in range(len(val)-1):
+                for idx in range(len(val) - 1):
                     total_ld_field += editdistance.eval(
-                        val[idx][0], val[idx+1][0])
+                        val[idx][0], val[idx + 1][0])
                     total_ld_value += editdistance.eval(
-                        val[idx][1], val[idx+1][1])
+                        val[idx][1], val[idx + 1][1])
 
-                    for hv in range(min(len(val[idx][1]), len(val[idx+1][1]))):
+                    for hv in range(
+                            min(len(val[idx][1]), len(val[idx + 1][1]))):
                         total_ld_indiv += editdistance.eval(
-                            val[idx][1][hv], val[idx+1][1][hv])
+                            val[idx][1][hv], val[idx + 1][1][hv])
 
-                avg_ld_field = float(total_ld_field) / (len(val)-1)
-                avg_ld_value = float(total_ld_value) / (len(val)-1)
+                avg_ld_field = float(total_ld_field) / (len(val) - 1)
+                avg_ld_value = float(total_ld_value) / (len(val) - 1)
                 avg_ld_indiv = float(total_ld_indiv) / \
                     (total_ld_value) if total_ld_value != 0 else 0
 

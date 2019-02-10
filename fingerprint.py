@@ -9,7 +9,8 @@ class Fingerprint():
     Object that describes a fingerprint of DECANTeR.
     """
 
-    def __init__(self, label, ua, hosts, ip_dsts, const_head, lang, avg_size, outg_info, method_name, is_malicious=0):
+    def __init__(self, label, ua, hosts, ip_dsts, const_head, lang,
+                 avg_size, outg_info, method_name, is_malicious=0):
         if label == "Background":
             self.label = label
             self.user_agent = ua
@@ -31,7 +32,8 @@ class Fingerprint():
             self.language = lang
             self.method = method_name
             self.hosts = hosts
-            # IP destinations added - Added to __str__ as number of unique IP's as it becomes too large to print entirely
+            # IP destinations added - Added to __str__ as number of unique IP's
+            # as it becomes too large to print entirely
             self.ip_dsts = ip_dsts
             self.constant_header_fields = None
             self.avg_size = None
@@ -71,9 +73,11 @@ class Fingerprint():
 
     def to_csv(self):
         if self.label == "Background":
-            return [self.label, self.method, self.user_agent, list(self.hosts), self.ip_dsts, self.constant_header_fields, self.avg_size, self.outgoing_info, self.is_malicious]
+            return [self.label, self.method, self.user_agent, list(
+                self.hosts), self.ip_dsts, self.constant_header_fields, self.avg_size, self.outgoing_info, self.is_malicious]
         else:
-            return [self.label, self.method, self.user_agent, list(self.hosts), self.ip_dsts, self.language, self.outgoing_info, self.is_malicious]
+            return [self.label, self.method, self.user_agent, list(
+                self.hosts), self.ip_dsts, self.language, self.outgoing_info, self.is_malicious]
 
 
 class FingerprintGenerator():
@@ -133,7 +137,8 @@ class FingerprintGenerator():
         is_malicious = '1' if '1' in [
             m.is_malicious for m in method_cluster] else '0'
 
-        # Return None if there are no request to analyze. (i.e., fingerprint does not exist)
+        # Return None if there are no request to analyze. (i.e., fingerprint
+        # does not exist)
         if not method_cluster:
             return None
 
@@ -146,13 +151,14 @@ class FingerprintGenerator():
                 hosts[clean_hostname] = hosts.get(clean_hostname, 0) + 1
 
             # Add destination ip
-            if http_request.dest_ip != None:
+            if http_request.dest_ip is not None:
                 if http_request.dest_ip not in ip_dsts:
                     ip_dsts.append(http_request.dest_ip)
 
             # Add user-agent
             if 'user-agent' in http_request.header_values:
-                if http_request.header_values.get('user-agent') not in user_agent:
+                if http_request.header_values.get(
+                        'user-agent') not in user_agent:
                     user_agent.append(
                         http_request.header_values.get('user-agent'))
             else:
@@ -162,7 +168,8 @@ class FingerprintGenerator():
 
             # Add languange
             if 'accept-language' in http_request.header_values:
-                if http_request.header_values.get('accept-language') not in language:
+                if http_request.header_values.get(
+                        'accept-language') not in language:
                     language.append(
                         http_request.header_values.get('accept-language'))
 
@@ -172,7 +179,8 @@ class FingerprintGenerator():
                 # Add first request to the cache
                 cache.append(http_request)
 
-                # Update the total size of the header with the size of each part of the HTTP request
+                # Update the total size of the header with the size of each
+                # part of the HTTP request
                 total_size_headers += uri_length
                 total_size_headers += http_request.req_body_len
                 for header_name in http_request.header_values.keys():
@@ -191,7 +199,8 @@ class FingerprintGenerator():
                 outgoing_info = self._compute_outgoing_info(
                     http_request, cache[0], outgoing_info, cache)
 
-                # Update the total size of the header with the size of each part of the HTTP request
+                # Update the total size of the header with the size of each
+                # part of the HTTP request
                 total_size_headers += uri_length
                 total_size_headers += http_request.req_body_len
                 for header_name in http_request.header_values.keys():
@@ -217,7 +226,8 @@ class FingerprintGenerator():
 
         return finger
 
-    def _compute_outgoing_info(self, current_req, old_req, outgoing_info, cache):
+    def _compute_outgoing_info(
+            self, current_req, old_req, outgoing_info, cache):
         """
             Compute Outgoing information and update the cache.
 
@@ -268,7 +278,7 @@ class FingerprintGenerator():
 
     def _parse(self, hostname):
         """
-            Extract the top level domain (TLD) and second level domain (SLD) from a hostname string. 
+            Extract the top level domain (TLD) and second level domain (SLD) from a hostname string.
 
             E.g., Input: www.google.com ---> Output google.com
 
@@ -285,12 +295,14 @@ class FingerprintGenerator():
                 String containing second and top level domain
         """
 
-        # Check if the hostname represents an IP address, if so returns its string value
+        # Check if the hostname represents an IP address, if so returns its
+        # string value
         try:
             IP(hostname)
             return hostname
 
-        # Otherwise parse the hostname as a URL. We need the top level domain and second level domain.
+        # Otherwise parse the hostname as a URL. We need the top level domain
+        # and second level domain.
         except ValueError:
             top_domains = ".".join(hostname.split('.')[-2:])
             return top_domains
@@ -354,7 +366,8 @@ class FingerprintManager():
         return
 
     # Give in input a single fingerprint and dump it into a file. IN THIS CASE WE APPEND, because in testing we get
-    # fingerprints every X minutes, so they are appended as soon as they are created.
+    # fingerprints every X minutes, so they are appended as soon as they are
+    # created.
     def write_fingerprint_to_file(self, filename, fingerprint, host):
         if fingerprint is None:
             return
@@ -380,7 +393,8 @@ class FingerprintManager():
             avg_size = float(row[6])
             outgoing_info = float(row[7])
             is_malicious = row[8]
-            return Fingerprint(label, user_agent, hosts, ip_dsts, const_head, None, avg_size, outgoing_info, method, is_malicious)
+            return Fingerprint(label, user_agent, hosts, ip_dsts, const_head,
+                               None, avg_size, outgoing_info, method, is_malicious)
         else:
             method = row[1]
             user_agent = ast.literal_eval(row[2])
@@ -389,7 +403,8 @@ class FingerprintManager():
             language = ast.literal_eval(row[5])
             outgoing_info = float(row[6])
             is_malicious = row[7]
-            return Fingerprint(label, user_agent, hosts, ip_dsts, None, language, None, outgoing_info, method, is_malicious)
+            return Fingerprint(label, user_agent, hosts, ip_dsts, None,
+                               language, None, outgoing_info, method, is_malicious)
 
     # We can use this method to read the "trained" fingerprints.
 
