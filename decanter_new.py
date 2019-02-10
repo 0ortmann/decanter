@@ -1,8 +1,8 @@
 import pandas as pd
 import datetime
-from label_generation import LabelGenerator
-from fingerprint import Fingerprint, FingerprintGenerator, FingerprintManager
-from detection import DetectionModule
+from decanter.label_generation import LabelGenerator
+from decanter.fingerprint import Fingerprint, FingerprintGenerator, FingerprintManager
+from decanter.detection import DetectionModule
 
 
 class HTTPRequest():

@@ -1,7 +1,7 @@
-from bro_parser import BroParser
-from decanter_new import Aggregator
-from evaluation_utils import EvaluationUtils
-from detection import OfflineDetector
+from decanter.bro_parser import BroParser
+from decanter.decanter_new import Aggregator
+from decanter.evaluation_utils import EvaluationUtils
+from decanter.detection import OfflineDetector
 import sys
 import argparse
 
@@ -62,6 +62,7 @@ class Decanter():
             print(f)
 
     def train(self):
+        print('decanter training...')
         bp = BroParser()
         training = bp.parseFile(self.training_log, self.is_json)
 

@@ -1,4 +1,4 @@
-from detection import DetectionModule
+from decanter.detection import DetectionModule
 
 
 class EvaluationUtils:

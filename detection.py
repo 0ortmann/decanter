@@ -1,6 +1,6 @@
 import editdistance
 import glob
-from fingerprint import FingerprintManager
+from decanter.fingerprint import FingerprintManager
 
 
 class DetectionModule():
