@@ -28,11 +28,11 @@ class BroParser:
             df = pd.DataFrame(bro_log.readrows())
         else:
             df = pd.read_json(filename, lines=True)
-            df.rename(
-                index=str,
-                columns={
-                    'client_header_names': 'header_values'},
-                inplace=True)
+            #df.rename(
+            #    index=str,
+            #    columns={
+            #        'client_header_names': 'header_values'},
+            #    inplace=True)
         df['header_values'] = df['header_values'].apply(
             self.__parseHeaderValues__)
         return df
@@ -66,7 +66,7 @@ class BroParser:
 
             Parameters
             ----------
-            headerValues : string
+            headerValues : list of strings or string
                 header value in bro format
 
             Returns
@@ -75,6 +75,10 @@ class BroParser:
                 header value in dict format
 
             """
+        if isinstance(headerValues, list):
+            headerValues = ','.join(headerValues)
+        if not isinstance(headerValues, str):
+            return {}
         try:
             return dict((x, y) for x, y in list(map(lambda entry: (entry.split('||')[
                         0].lower(), entry.split('||')[1].replace('\\x2c', ',')), headerValues.split(','))))
