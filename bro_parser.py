@@ -75,12 +75,11 @@ class BroParser:
                 header value in dict format
 
             """
-        if isinstance(headerValues, list):
-            headerValues = ','.join(headerValues)
-        if not isinstance(headerValues, str):
-            return {}
+        hv = headerValues
+        if isinstance(headerValues, str):
+            hv = headerValues.split(',')
         try:
             return dict((x, y) for x, y in list(map(lambda entry: (entry.split('||')[
-                        0].lower(), entry.split('||')[1].replace('\\x2c', ',')), headerValues.split(','))))
+                        0].lower(), entry.split('||')[1].replace('\\x2c', ',')), hv)))
         except BaseException:
             return {}
