@@ -10,13 +10,14 @@ class Fingerprint():
     """
 
     def __init__(self, label, ua, hosts, ip_dsts, const_head, lang,
-                 avg_size, outg_info, method_name, is_malicious=0):
+                 avg_size, outg_info, method_name, is_malicious=0, ip_srcs=[]):
         if label == "Background":
             self.label = label
             self.user_agent = ua
             self.hosts = hosts
             # IP destinations added
             self.ip_dsts = ip_dsts
+            self.ip_srcs = ip_srcs
             self.constant_header_fields = const_head
             self.language = lang
             self.avg_size = float(avg_size)
@@ -34,6 +35,7 @@ class Fingerprint():
             self.hosts = hosts
             # IP destinations added - Added to __str__ as number of unique IP's
             # as it becomes too large to print entirely
+            self.ip_dsts = ip_dsts
             self.ip_dsts = ip_dsts
             self.constant_header_fields = None
             self.avg_size = None
@@ -54,11 +56,12 @@ class Fingerprint():
                     User-Agent: {}
                     Hosts: {}
                     Destination IP's: {}
+                    Source IP's: {}
                     Constant Headers: {}
                     Average Req Size: {}
                     Outgoing Info: {}
                     Is malicious: {}
-            """.format(self.label, self.method, self.user_agent, list(self.hosts), self.ip_dsts, self.constant_header_fields, self.avg_size, self.outgoing_info, self.is_malicious == '1')
+            """.format(self.label, self.method, self.user_agent, list(self.hosts), self.ip_dsts, self.ip_srcs, self.constant_header_fields, self.avg_size, self.outgoing_info, self.is_malicious == '1')
         else:
             return """
             {} Application:
@@ -127,6 +130,7 @@ class FingerprintGenerator():
         #label = ""
         hosts = dict()
         ip_dsts = []
+        ip_srcs = []
         constant_header_fields = []
         average_size = 0.0
         user_agent = []
@@ -154,6 +158,11 @@ class FingerprintGenerator():
             if http_request.dest_ip is not None:
                 if http_request.dest_ip not in ip_dsts:
                     ip_dsts.append(http_request.dest_ip)
+
+            # Add src ip
+            if http_request.orig_ip is not None:
+                if http_request.orig_ip not in ip_srcs:
+                    ip_srcs.append(http_request.orig_ip)
 
             # Add user-agent
             if 'user-agent' in http_request.header_values:
@@ -222,7 +231,7 @@ class FingerprintGenerator():
 
         # Generate Fingerprint for the given cluster of HTTP requests
         finger = Fingerprint(label, user_agent, hosts.items(), ip_dsts, constant_header_fields, language, average_size,
-                             outgoing_info, method_name, is_malicious)
+                             outgoing_info, method_name, is_malicious, ip_srcs)
 
         return finger
 
