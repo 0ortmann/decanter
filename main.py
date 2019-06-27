@@ -94,6 +94,17 @@ class Decanter():
         self.already_alerted.update(new_alerts)
         return new_alerts
 
+    def testFile(self):
+        bp = BroParser()
+        testing = bp.parseFile(self.testing_log, self.is_json)
+
+        self.model.analyze_log(testing)
+
+        e = EvaluationUtils(self.model.alerts, [])
+        e._unique_fingerprints()
+
+        return set(e.unique_fing)
+
 def main(argv):
     parser = argparse.ArgumentParser(
         description="DECANTeR: DETection of Anomalous outbouNd HTTP Traffic by Passive Application Fingerprinting")
