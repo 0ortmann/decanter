@@ -15,6 +15,7 @@ class Decanter():
         self.offline = offline
         self.is_json = is_json
         self.csv_path = csv_path
+        self.already_alerted = set() # hack to not alert same stuff over and over again when running on continous input
 
         self.model = None
 
@@ -89,7 +90,9 @@ class Decanter():
         e = EvaluationUtils(self.model.alerts, [])
         e._unique_fingerprints()
 
-        return e.unique_fing
+        new_alerts = set(e.unique_fing) - self.already_alerted
+        self.already_alerted.update(new_alerts)
+        return new_alerts
 
 def main(argv):
     parser = argparse.ArgumentParser(
