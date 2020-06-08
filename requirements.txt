@@ -1,6 +1,6 @@
-brothon==0.2.5
+zat==0.3.9
 editdistance==0.5.2
 IPy==0.83
 networkx==2.2
-pandas==0.24.0
+pandas>=0.24.0
 urllib3==1.24.1

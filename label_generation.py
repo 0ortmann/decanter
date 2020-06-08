@@ -1,5 +1,3 @@
-from brothon import bro_log_reader
-import pandas as pd
 import networkx as nx
 import urllib
 import editdistance

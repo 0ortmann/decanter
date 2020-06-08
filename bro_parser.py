@@ -1,5 +1,5 @@
 from __future__ import division
-from brothon import bro_log_reader
+from zat import bro_log_reader
 import pandas as pd
 
 
