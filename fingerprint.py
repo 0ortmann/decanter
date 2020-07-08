@@ -36,7 +36,7 @@ class Fingerprint():
             # IP destinations added - Added to __str__ as number of unique IP's
             # as it becomes too large to print entirely
             self.ip_dsts = ip_dsts
-            self.ip_dsts = ip_dsts
+            self.ip_srcs = ip_srcs
             self.constant_header_fields = None
             self.avg_size = None
             self.outgoing_info = int(outg_info)
